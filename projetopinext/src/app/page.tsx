@@ -9,32 +9,34 @@ import axios from "axios";
 
 
 export default function App() {
-  const router = useRouter();
-
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-
+  
+  
   const handleLogin = async () => {
+    const router = useRouter();
     try {
       const response = await axios.get("/analista");
       const analistas = response.data;
-
+      
       const analista = analistas.find(
         (analista: { email: string; senha: string }) =>
           analista.email === email && analista.senha === password
       );
       
       if (analista) {
-        router.push("/home");
+        if (router.isReady) { // Verifique se o roteador está pronto antes de usá-lo
+          router.push("/home");
+        }
       } else {
         setError("Usuário ou senha incorretos");
       }
     } catch (error) {
       setError("Ocorreu um erro ao fazer login");
     }
-  };
+  };  
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[url('/img/sean-pollock-PhYq704ffdA-unsplash.jpg')] bg-cover bg-center">
