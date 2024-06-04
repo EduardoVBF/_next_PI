@@ -61,7 +61,7 @@ export default function App() {
             type="submit"
             variant="default"
             size="default"
-            onClick={() => router.push("/home")}
+            onClick={handleLogin}
           >
             Login
           </Button>
