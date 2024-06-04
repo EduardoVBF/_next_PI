@@ -7,17 +7,26 @@ import React, { useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [error, setError] = useState("");
 
 export default function App() {
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+
   const handleLogin = async () => {
     try {
       const response = await axios.get("/analista");
-      const analista = response.data;
+      const analistas = response.data;
 
-      if (analista.email === email && analista.senha === password) {
+      const analista = analistas.find(
+        (analista: { email: string; senha: string }) =>
+          analista.email === email && analista.senha === password
+      );
+      
+      if (analista) {
         router.push("/home");
       } else {
         setError("Usuário ou senha incorretos");
@@ -26,7 +35,6 @@ export default function App() {
       setError("Ocorreu um erro ao fazer login");
     }
   };
-  const router = useRouter();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[url('/img/sean-pollock-PhYq704ffdA-unsplash.jpg')] bg-cover bg-center">
