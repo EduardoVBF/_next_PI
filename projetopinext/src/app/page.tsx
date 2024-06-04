@@ -1,42 +1,56 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/router";
 import Footer from "../components/footer";
 import React, { useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 
+// Definindo o tipo para o objeto analista
+interface Analista {
+  _id: string;
+  nome: string;
+  email: string;
+  senha: string;
+  localAnalista: string;
+  __v: number;
+}
 
 export default function App() {
-  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  
-  
+  const [message, setMessage] = useState("");
+
   const handleLogin = async () => {
-    const router = useRouter();
+    console.log("handleLogin foi chamada");
     try {
-      const response = await axios.get("/analista");
-      const analistas = response.data;
-      
-      const analista = analistas.find(
-        (analista: { email: string; senha: string }) =>
-          analista.email === email && analista.senha === password
-      );
-      
-      if (analista) {
-        if (router.isReady) { // Verifique se o roteador está pronto antes de usá-lo
-          router.push("/home");
+      console.log("Antes da chamada axios.get");
+      const response = await axios.get("http://localhost:8080/analista");
+      console.log("Resposta da API:", response);
+  
+      if (response.status === 200) {
+        const analistas: Analista[] = response.data;
+        console.log("Analistas recebidos:", analistas);
+  
+        const foundAnalista = analistas.find(
+          (analista) => analista.email === email && analista.senha === password
+        );
+  
+        if (foundAnalista) {
+          setMessage("Login bem-sucedido!");
+        } else {
+          setMessage("Usuário ou senha incorretos");
         }
       } else {
-        setError("Usuário ou senha incorretos");
+        setMessage("Erro na resposta da API");
+        console.error("Erro na resposta da API:", response.status);
       }
     } catch (error) {
-      setError("Ocorreu um erro ao fazer login");
+      console.error("Erro na requisição:", error);
+      setMessage("Ocorreu um erro ao fazer login");
     }
-  };  
+  };
+  
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[url('/img/sean-pollock-PhYq704ffdA-unsplash.jpg')] bg-cover bg-center">
@@ -75,10 +89,11 @@ export default function App() {
           >
             Login
           </Button>
-          {error && <p>{error}</p>}
+          {message && <p className="mt-4 text-white">{message}</p>}
         </div>
       </div>
-      <Footer></Footer>
+      <Footer />
     </main>
   );
 }
+
