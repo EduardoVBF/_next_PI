@@ -1,13 +1,31 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import Footer from "../components/footer";
+import React, { useState } from "react";
 import Image from "next/image";
-import React from "react";
+import axios from "axios";
 
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [error, setError] = useState("");
 
 export default function App() {
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get("/analista");
+      const analista = response.data;
+
+      if (analista.email === email && analista.senha === password) {
+        router.push("/home");
+      } else {
+        setError("Usuário ou senha incorretos");
+      }
+    } catch (error) {
+      setError("Ocorreu um erro ao fazer login");
+    }
+  };
   const router = useRouter();
 
   return (
@@ -27,12 +45,16 @@ export default function App() {
             placeholder="Usuário"
             className="mt-2 w-10/12 lg:w-1/2 mb-1 rounded-xl py-6"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <Input
             type="password"
             placeholder="Senha"
             className="mt-2 w-10/12 lg:w-1/2 mb-6 rounded-xl py-6"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Button
             className="w-1/4 h-10 bg-[#3e8721] hover:bg-[#29581f] text-white shadow-md rounded-xl hover:shadow-xl"
@@ -43,6 +65,7 @@ export default function App() {
           >
             Login
           </Button>
+          {error && <p>{error}</p>}
         </div>
       </div>
       <Footer></Footer>
