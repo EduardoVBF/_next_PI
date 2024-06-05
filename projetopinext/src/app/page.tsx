@@ -1,9 +1,10 @@
-"use client";
+'use client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Footer from "../components/footer";
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
+import React from "react";
 import axios from "axios";
 
 // Definindo o tipo para o objeto analista
@@ -22,35 +23,26 @@ export default function App() {
   const [message, setMessage] = useState("");
 
   const handleLogin = async () => {
-    console.log("handleLogin foi chamada");
     try {
-      console.log("Antes da chamada axios.get");
       const response = await axios.get("http://localhost:8080/analista");
-      console.log("Resposta da API:", response);
-  
-      if (response.status === 200) {
-        const analistas: Analista[] = response.data;
-        console.log("Analistas recebidos:", analistas);
-  
-        const foundAnalista = analistas.find(
-          (analista) => analista.email === email && analista.senha === password
-        );
-  
-        if (foundAnalista) {
-          setMessage("Login bem-sucedido!");
-        } else {
-          setMessage("Usuário ou senha incorretos");
-        }
+
+      const analistas: Analista[] = response.data;
+
+      const foundAnalista = analistas.find(
+        (analista) => analista.email === email && analista.senha === password
+      );
+
+      if (foundAnalista) {
+        setMessage("Login bem-sucedido!");
+        window.location.href = "/home";
       } else {
-        setMessage("Erro na resposta da API");
-        console.error("Erro na resposta da API:", response.status);
+        setMessage("Usuário ou senha incorretos");
       }
     } catch (error) {
       console.error("Erro na requisição:", error);
       setMessage("Ocorreu um erro ao fazer login");
     }
   };
-  
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[url('/img/sean-pollock-PhYq704ffdA-unsplash.jpg')] bg-cover bg-center">
@@ -96,4 +88,3 @@ export default function App() {
     </main>
   );
 }
-
