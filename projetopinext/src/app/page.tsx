@@ -1,13 +1,12 @@
-'use client';
+'use client'
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Footer from "../components/footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import React from "react";
 import axios from "axios";
+import React from "react";
 
-// Definindo o tipo para o objeto analista
 interface Analista {
   _id: string;
   nome: string;
@@ -22,6 +21,14 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    // Verificar se há informações de login no localStorage e preencher o campo de email
+    const storedEmail = localStorage.getItem('email');
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+  }, []);
+
   const handleLogin = async () => {
     try {
       const response = await axios.get("http://localhost:8080/analista");
@@ -33,6 +40,8 @@ export default function App() {
       );
 
       if (foundAnalista) {
+        // Guardar informações de login no localStorage
+        localStorage.setItem('email', email);
         setMessage("Login bem-sucedido!");
         window.location.href = "/home";
       } else {
